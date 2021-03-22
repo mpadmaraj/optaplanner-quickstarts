@@ -81,7 +81,7 @@ public class TimeTableSpringBootApp {
                 timeslotRepository.save(new Timeslot(DayOfWeek.FRIDAY, LocalTime.of(14, 30), LocalTime.of(15, 30)));
             }
 
-            roomRepository.save(new Room("Room AA"));
+            roomRepository.save(new Room("Room AC"));
             roomRepository.save(new Room("Room B"));
             roomRepository.save(new Room("Room C"));
             if (demoData == DemoData.LARGE) {
