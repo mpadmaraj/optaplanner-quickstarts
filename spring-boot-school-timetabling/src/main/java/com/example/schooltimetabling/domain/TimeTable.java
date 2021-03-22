@@ -17,7 +17,7 @@
 package com.example.schooltimetabling.domain;
 
 import java.util.List;
-
+import org.optaplanner.core.api.domain.constraintweight.ConstraintConfigurationProvider;
 import org.optaplanner.core.api.domain.solution.PlanningEntityCollectionProperty;
 import org.optaplanner.core.api.domain.solution.PlanningScore;
 import org.optaplanner.core.api.domain.solution.PlanningSolution;
@@ -28,6 +28,9 @@ import org.optaplanner.core.api.solver.SolverStatus;
 
 @PlanningSolution
 public class TimeTable {
+
+    @ConstraintConfigurationProvider
+    private SchoolTimeTableConstraintConfiguration constraintConfiguration = new SchoolTimeTableConstraintConfiguration();
 
     @ValueRangeProvider(id = "timeslotRange")
     @ProblemFactCollectionProperty
@@ -61,6 +64,13 @@ public class TimeTable {
     // Getters and setters
     // ************************************************************************
 
+    public SchoolTimeTableConstraintConfiguration getConstraintConfiguration() {
+        return constraintConfiguration;
+    }
+
+    public void setConstraintConfiguration(SchoolTimeTableConstraintConfiguration constraintConfiguration) {
+        this.constraintConfiguration = constraintConfiguration;
+    }
     public List<Timeslot> getTimeslotList() {
         return timeslotList;
     }
@@ -83,6 +93,11 @@ public class TimeTable {
 
     public void setSolverStatus(SolverStatus solverStatus) {
         this.solverStatus = solverStatus;
+    }
+
+    public TimeTable withConstraintConfiguration(SchoolTimeTableConstraintConfiguration constraintConfiguration) {
+        this.constraintConfiguration = constraintConfiguration;
+        return this;
     }
 
 }

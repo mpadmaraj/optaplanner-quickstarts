@@ -26,6 +26,10 @@ import org.optaplanner.core.api.score.stream.Joiners;
 
 import com.example.schooltimetabling.domain.Lesson;
 
+import static com.example.schooltimetabling.domain.SchoolTimeTableConstraintConfiguration.ROOM_CONFLICT;
+import static com.example.schooltimetabling.domain.SchoolTimeTableConstraintConfiguration.TEACHER_CONFLICT;
+import static com.example.schooltimetabling.domain.SchoolTimeTableConstraintConfiguration.STUDENT_CONFLICT;
+
 public class TimeTableConstraintProvider implements ConstraintProvider {
 
     @Override
@@ -52,7 +56,8 @@ public class TimeTableConstraintProvider implements ConstraintProvider {
                         // ... in the same room ...
                         Joiners.equal(Lesson::getRoom))
                 // ... and penalize each pair with a hard weight.
-                .penalize("Room conflict", HardSoftScore.ONE_HARD);
+                  .penalizeConfigurable(ROOM_CONFLICT);
+                //.penalize("Room conflict", HardSoftScore.ONE_HARD);
     }
 
     Constraint teacherConflict(ConstraintFactory constraintFactory) {
@@ -61,7 +66,8 @@ public class TimeTableConstraintProvider implements ConstraintProvider {
                 .fromUniquePair(Lesson.class,
                         Joiners.equal(Lesson::getTimeslot),
                         Joiners.equal(Lesson::getTeacher))
-                .penalize("Teacher conflict", HardSoftScore.ONE_HARD);
+                .penalizeConfigurable(TEACHER_CONFLICT);
+                //.penalize("Teacher conflict", HardSoftScore.ONE_HARD);
     }
 
     Constraint studentGroupConflict(ConstraintFactory constraintFactory) {
@@ -70,7 +76,8 @@ public class TimeTableConstraintProvider implements ConstraintProvider {
                 .fromUniquePair(Lesson.class,
                         Joiners.equal(Lesson::getTimeslot),
                         Joiners.equal(Lesson::getStudentGroup))
-                .penalize("Student group conflict", HardSoftScore.ONE_HARD);
+                .penalizeConfigurable(STUDENT_CONFLICT);
+                //.penalize("Student group conflict", HardSoftScore.ONE_HARD);
     }
 
     Constraint teacherRoomStability(ConstraintFactory constraintFactory) {
