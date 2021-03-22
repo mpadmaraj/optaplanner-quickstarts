@@ -17,6 +17,7 @@
 package com.example.schooltimetabling.rest;
 
 import org.optaplanner.core.api.score.ScoreManager;
+import org.optaplanner.core.api.score.ScoreExplanation;
 import org.optaplanner.core.api.score.buildin.hardsoft.HardSoftScore;
 import org.optaplanner.core.api.solver.SolverManager;
 import org.optaplanner.core.api.solver.SolverStatus;
@@ -49,6 +50,7 @@ public class TimeTableController {
         TimeTable solution = timeTableRepository.findById(TimeTableRepository.SINGLETON_TIME_TABLE_ID);
         scoreManager.updateScore(solution); // Sets the score
         solution.setSolverStatus(solverStatus);
+        //System.out.println(scoreManager.explainScore(solution));
         return solution;
     }
 
@@ -57,6 +59,12 @@ public class TimeTableController {
         solverManager.solveAndListen(TimeTableRepository.SINGLETON_TIME_TABLE_ID,
                 timeTableRepository::findById,
                 timeTableRepository::save);
+    }
+    
+    @PostMapping("/reason")
+    public ScoreExplanation<TimeTable, HardSoftScore> reason() {
+        TimeTable solution = timeTableRepository.findById(TimeTableRepository.SINGLETON_TIME_TABLE_ID);
+        return scoreManager.explainScore(solution);
     }
 
     public SolverStatus getSolverStatus() {

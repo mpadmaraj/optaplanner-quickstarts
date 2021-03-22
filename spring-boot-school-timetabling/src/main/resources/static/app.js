@@ -3,7 +3,7 @@ var autoRefreshIntervalId = null;
 function refreshTimeTable() {
   $.getJSON("/timeTable", function (timeTable) {
     refreshSolvingButtons(timeTable.solverStatus != null && timeTable.solverStatus !== "NOT_SOLVING");
-    $("#score").text("Score: " + (timeTable.score == null ? "?" : timeTable.score));
+    /* $("#score").text("Score: " + (timeTable.score == null ? "?" : timeTable.score)); */
 
     const timeTableByRoom = $("#timeTableByRoom");
     timeTableByRoom.children().remove();
@@ -130,16 +130,41 @@ function solve() {
   });
 }
 
+
+function reason() {
+  $.post("/timeTable/reason", function (reason) {
+    alert(reason.summary)
+  }).fail(function (xhr, ajaxOptions, thrownError) {
+    showError("Start solving failed.", xhr);
+  });
+}
+
+function constraints() {
+  $.post("/timeTable/reason", function (reason) {
+   // alert(reason.summary)
+    let constraints = {};
+    let str = "";
+    for (const constraint in reason.constraintMatchTotalMap) {
+      constraints[reason.constraintMatchTotalMap[constraint].constraintName] = reason.constraintMatchTotalMap[constraint].constraintWeight.HardSoftScore;
+      str += reason.constraintMatchTotalMap[constraint].constraintName + " : " + reason.constraintMatchTotalMap[constraint].constraintWeight.HardSoftScore + "\n";
+    }
+    alert(str);
+  }).fail(function (xhr, ajaxOptions, thrownError) {
+    showError("Start solving failed.", xhr);
+  });
+}
+
 function refreshSolvingButtons(solving) {
   if (solving) {
-    $("#solveButton").hide();
-    $("#stopSolvingButton").show();
-    if (autoRefreshIntervalId == null) {
+   // $("#solveButton").hide();
+    //$("#stopSolvingButton").show();
+    refreshTimeTable();
+/*     if (autoRefreshIntervalId == null) {
       autoRefreshIntervalId = setInterval(refreshTimeTable, 2000);
-    }
+    } */
   } else {
     $("#solveButton").show();
-    $("#stopSolvingButton").hide();
+    //$("#stopSolvingButton").hide();
     if (autoRefreshIntervalId != null) {
       clearInterval(autoRefreshIntervalId);
       autoRefreshIntervalId = null;
@@ -271,6 +296,13 @@ $(document).ready(function () {
   $("#solveButton").click(function () {
     solve();
   });
+  $("#scoreReason").click(function () {
+    reason();
+  });
+  $("#showConstriaints").click(function () {
+    constraints();
+  });
+  
   $("#stopSolvingButton").click(function () {
     stopSolving();
   });
@@ -291,8 +323,8 @@ $(document).ready(function () {
 // TangoColorFactory
 // ****************************************************************************
 
-const SEQUENCE_1 = [0x8AE234, 0xFCE94F, 0x729FCF, 0xE9B96E, 0xAD7FA8];
-const SEQUENCE_2 = [0x73D216, 0xEDD400, 0x3465A4, 0xC17D11, 0x75507B];
+const SEQUENCE_1 = [0xF0F8FF, 0x7DF9FF, 0xA9BA9D, 0xFFA07A, 0xB0C4DE];
+const SEQUENCE_2 = [0xE1EBEE, 0xFBCEB1, 0xE0FFFF, 0xDADD98, 0xF88379];
 
 var colorMap = new Map;
 var nextColorCount = 0;
