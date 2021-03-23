@@ -38,7 +38,7 @@ public class TimeTableControllerTest {
     @Autowired
     private TimeTableController timeTableController;
 
-    @Test
+    /*@Test
     @Timeout(600_000)
     public void solveDemoDataUntilFeasible() throws InterruptedException {
         timeTableController.solve();
@@ -56,6 +56,6 @@ public class TimeTableControllerTest {
             assertNotNull(lesson.getRoom());
         }
         assertTrue(timeTable.getScore().isFeasible());
-    }
+    }*/
 
 }
