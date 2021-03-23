@@ -49,6 +49,7 @@ public class TimeTable {
     // Ignored by OptaPlanner, used by the UI to display solve or stop solving button
     private SolverStatus solverStatus;
 
+
     // No-arg constructor required for OptaPlanner
     public TimeTable() {
     }
@@ -89,6 +90,12 @@ public class TimeTable {
 
     public SolverStatus getSolverStatus() {
         return solverStatus;
+    }
+
+    public void setRoomConsidered(boolean roomConsidered) {
+        if(!roomConsidered){
+            constraintConfiguration.setRoomConflict(HardSoftScore.ZERO);
+        }
     }
 
     public void setSolverStatus(SolverStatus solverStatus) {

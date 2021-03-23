@@ -1,5 +1,5 @@
 var autoRefreshIntervalId = null;
-
+var initialized = false;
 function refreshTimeTable() {
   $.getJSON("/timeTable", function (timeTable) {
     refreshSolvingButtons(timeTable.solverStatus != null && timeTable.solverStatus !== "NOT_SOLVING");
@@ -98,7 +98,7 @@ function refreshTimeTable() {
           .append($(`<h5 class="card-title mb-1"/>`).text(lesson.subject))
           .append($(`<p class="card-text ml-2 mb-1"/>`)
             .append($(`<em/>`).text(`by ${lesson.teacher}`)))
-          .append($(`<small class="ml-2 mt-1 card-text text-muted align-bottom float-right"/>`).text(lesson.id))
+          //.append($(`<small class="ml-2 mt-1 card-text text-muted align-bottom float-right"/>`).text(lesson.id))
           .append($(`<p class="card-text ml-2"/>`).text(lesson.studentGroup)));
       const lessonElement = lessonElementWithoutDelete.clone();
       lessonElement.find(".card-body").prepend(
@@ -124,7 +124,15 @@ function convertToId(str) {
 
 function solve() {
   $.post("/timeTable/solve", function () {
-    refreshSolvingButtons(true);
+     refreshTimeTable();
+  }).fail(function (xhr, ajaxOptions, thrownError) {
+    showError("Start solving failed.", xhr);
+  });
+}
+
+function solveWithoutRoom() {
+  $.get("/timeTable/reset", function () {
+     //refreshTimeTable();
   }).fail(function (xhr, ajaxOptions, thrownError) {
     showError("Start solving failed.", xhr);
   });
@@ -183,16 +191,21 @@ function stopSolving() {
 
 function addLesson() {
   var subject = $("#lesson_subject").val().trim();
-  $.post("/lessons", JSON.stringify({
-    "subject": subject,
-    "teacher": $("#lesson_teacher").val().trim(),
-    "studentGroup": $("#lesson_studentGroup").val().trim()
-  }), function () {
-    refreshTimeTable();
+  $.post("/timeTable/stopSolving", function () {
+    $.post("/lessons", JSON.stringify({
+        "subject": subject,
+        "teacher": $("#lesson_teacher").val().trim(),
+        "studentGroup": $("#lesson_studentGroup").val().trim()
+    }), function () {
+        //refreshTimeTable();
+    }).fail(function (xhr, ajaxOptions, thrownError) {
+        showError("Adding lesson (" + subject + ") failed.", xhr);
+    });
+    $('#lessonDialog').modal('toggle');
   }).fail(function (xhr, ajaxOptions, thrownError) {
-    showError("Adding lesson (" + subject + ") failed.", xhr);
+    showError("Stop solving failed.", xhr);
   });
-  $('#lessonDialog').modal('toggle');
+
 }
 
 function deleteLesson(lesson) {
@@ -296,6 +309,10 @@ $(document).ready(function () {
   $("#solveButton").click(function () {
     solve();
   });
+  $("#solveWithoutRoomButton").click(function () {
+    solveWithoutRoom();
+  });
+  
   $("#scoreReason").click(function () {
     reason();
   });
@@ -316,7 +333,11 @@ $(document).ready(function () {
     addRoom();
   });
 
-  refreshTimeTable();
+  if(!initialized) {
+    initialized = true;
+    refreshTimeTable();
+  }
+  
 });
 
 // ****************************************************************************

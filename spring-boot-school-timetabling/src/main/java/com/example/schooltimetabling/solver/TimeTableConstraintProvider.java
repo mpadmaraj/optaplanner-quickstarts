@@ -29,11 +29,12 @@ import com.example.schooltimetabling.domain.Lesson;
 import static com.example.schooltimetabling.domain.SchoolTimeTableConstraintConfiguration.ROOM_CONFLICT;
 import static com.example.schooltimetabling.domain.SchoolTimeTableConstraintConfiguration.TEACHER_CONFLICT;
 import static com.example.schooltimetabling.domain.SchoolTimeTableConstraintConfiguration.STUDENT_CONFLICT;
-
+import static com.example.schooltimetabling.domain.SchoolTimeTableConstraintConfiguration.isRoomConsidered;
 public class TimeTableConstraintProvider implements ConstraintProvider {
 
     @Override
     public Constraint[] defineConstraints(ConstraintFactory constraintFactory) {
+        
         return new Constraint[] {
                 // Hard constraints
                 roomConflict(constraintFactory),
@@ -55,10 +56,14 @@ public class TimeTableConstraintProvider implements ConstraintProvider {
                         Joiners.equal(Lesson::getTimeslot),
                         // ... in the same room ...
                         Joiners.equal(Lesson::getRoom))
+                        
                 // ... and penalize each pair with a hard weight.
-                  .penalizeConfigurable(ROOM_CONFLICT);
+                .penalizeConfigurable(ROOM_CONFLICT);
                 //.penalize("Room conflict", HardSoftScore.ONE_HARD);
+
+      
     }
+
 
     Constraint teacherConflict(ConstraintFactory constraintFactory) {
         // A teacher can teach at most one lesson at the same time.

@@ -11,18 +11,22 @@ public class SchoolTimeTableConstraintConfiguration {
 
     public static final String ROOM_CONFLICT = "Room conflict";
 
+    public static final String ROOM_CONFLICT_IGNORE = "Room conflict ignore";
+
     public static final String TEACHER_CONFLICT = "Teacher conflict";
 
     public static final String STUDENT_CONFLICT = "Student group conflict";
 
+    public static boolean isRoomConsidered = true;
+
     @ConstraintWeight(ROOM_CONFLICT)
-    private HardSoftScore roomConflict = HardSoftScore.ONE_HARD;
+    private HardSoftScore roomConflict = HardSoftScore.ofHard(1000);
 
     @ConstraintWeight(TEACHER_CONFLICT)
-    private HardSoftScore teacherConflict = HardSoftScore.ONE_HARD;
+    private HardSoftScore teacherConflict = HardSoftScore.ofHard(100);
 
     @ConstraintWeight(STUDENT_CONFLICT)
-    private HardSoftScore studentConflict = HardSoftScore.ONE_HARD;
+    private HardSoftScore studentConflict = HardSoftScore.ofHard(10);
 
     public HardSoftScore getRoomConflict() {
         return roomConflict;
@@ -34,6 +38,7 @@ public class SchoolTimeTableConstraintConfiguration {
         }
         
     }
+
 
     public HardSoftScore getTeacherConflict() {
         return teacherConflict;

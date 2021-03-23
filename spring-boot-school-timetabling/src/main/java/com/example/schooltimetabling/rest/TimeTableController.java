@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.schooltimetabling.TimeTableSpringBootApp;
 import com.example.schooltimetabling.domain.TimeTable;
 import com.example.schooltimetabling.persistence.TimeTableRepository;
 
@@ -54,8 +55,27 @@ public class TimeTableController {
         return solution;
     }
 
+    @GetMapping("/reset")
+    public void  Reset() {
+      TimeTableSpringBootApp.restart();
+    }
+
     @PostMapping("/solve")
     public void solve() {
+        solverManager.terminateEarly(TimeTableRepository.SINGLETON_TIME_TABLE_ID);
+        solverManager.solveAndListen(TimeTableRepository.SINGLETON_TIME_TABLE_ID,
+                timeTableRepository::findById,
+                timeTableRepository::save);
+    }
+
+        @PostMapping("/solve/noroom")
+    public void solveWithoutRoom() {
+        SolverStatus solverStatus = getSolverStatus();
+        TimeTable solution = timeTableRepository.findById(TimeTableRepository.SINGLETON_TIME_TABLE_ID);
+        solution.setRoomConsidered(false);
+        scoreManager.updateScore(solution); // Sets the score
+        solution.setSolverStatus(solverStatus);
+        solverManager.terminateEarly(TimeTableRepository.SINGLETON_TIME_TABLE_ID);
         solverManager.solveAndListen(TimeTableRepository.SINGLETON_TIME_TABLE_ID,
                 timeTableRepository::findById,
                 timeTableRepository::save);

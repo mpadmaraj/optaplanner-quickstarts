@@ -25,6 +25,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.domain.Sort;
+import org.springframework.context.ConfigurableApplicationContext;
 
 import com.example.schooltimetabling.domain.Lesson;
 import com.example.schooltimetabling.domain.Room;
@@ -32,12 +33,14 @@ import com.example.schooltimetabling.domain.Timeslot;
 import com.example.schooltimetabling.persistence.LessonRepository;
 import com.example.schooltimetabling.persistence.RoomRepository;
 import com.example.schooltimetabling.persistence.TimeslotRepository;
+import org.springframework.boot.ApplicationArguments;
 
 @SpringBootApplication
 public class TimeTableSpringBootApp {
+ private static ConfigurableApplicationContext context;
 
     public static void main(String[] args) {
-        SpringApplication.run(TimeTableSpringBootApp.class, args);
+        context = SpringApplication.run(TimeTableSpringBootApp.class, args);
     }
 
     @Value("${timeTable.demoData:SMALL}")
@@ -98,8 +101,6 @@ public class TimeTableSpringBootApp {
             lessonRepository.save(new Lesson("French", "Mr. Rajan", "10th grade"));
             lessonRepository.save(new Lesson("Geography", "Mr. Harris", "10th grade"));
             lessonRepository.save(new Lesson("History", "Mr. D'Souza", "10th grade"));
-            lessonRepository.save(new Lesson("English", "Mrs. Taylor", "10th grade"));
-            lessonRepository.save(new Lesson("Spanish", "Mrs. Taylor", "10th grade"));
             if (demoData == DemoData.LARGE) {
                 lessonRepository.save(new Lesson("Math", "A. Jones", "9th grade"));
                 lessonRepository.save(new Lesson("Math", "A. Jones", "9th grade"));
@@ -123,10 +124,7 @@ public class TimeTableSpringBootApp {
             lessonRepository.save(new Lesson("Chemistry", "Mr. Rajan", "9th grade"));
             lessonRepository.save(new Lesson("Biology", "Mr. Harris", "9th grade"));
             lessonRepository.save(new Lesson("History", "Mr. D'Souza", "9th grade"));
-            lessonRepository.save(new Lesson("English", "Mr. D'Souza", "9th grade"));
-            lessonRepository.save(new Lesson("English", "Mr. D'Souza", "9th grade"));
-            lessonRepository.save(new Lesson("Spanish", "Mrs. Taylor", "9th grade"));
-            lessonRepository.save(new Lesson("Spanish", "Mrs. Taylor", "9th grade"));            
+            
 
             Lesson lesson = lessonRepository.findAll(Sort.by("id")).iterator().next();
             lesson.setTimeslot(timeslotRepository.findAll(Sort.by("id")).iterator().next());
@@ -140,6 +138,18 @@ public class TimeTableSpringBootApp {
         NONE,
         SMALL,
         LARGE
+    }
+
+    public static void restart() {
+        ApplicationArguments args = context.getBean(ApplicationArguments.class);
+
+        Thread thread = new Thread(() -> {
+            context.close();
+            context = SpringApplication.run(TimeTableSpringBootApp.class, args.getSourceArgs());
+        });
+
+        thread.setDaemon(false);
+        thread.start();
     }
 
 }
