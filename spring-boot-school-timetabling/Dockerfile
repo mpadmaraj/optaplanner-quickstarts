@@ -12,7 +12,7 @@ RUN mvn package
 FROM adoptopenjdk/openjdk11:jre-11.0.8_10-alpine
 
 # Copy the jar to the production image from the builder stage.
-COPY --from=builder /app/target/*.jar /app.jar
+COPY --from=builder /app/target/school-timetabling-1.0-SNAPSHOT.jar /app.jar
 EXPOSE 8080
 # Run the web service on container startup.
 CMD ["java", "-jar", "/app.jar"]
