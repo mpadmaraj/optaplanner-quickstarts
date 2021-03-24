@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.example.schooltimetabling.domain.ConstraintWeights;
 import com.example.schooltimetabling.domain.Lesson;
 import com.example.schooltimetabling.domain.TimeTable;
 
@@ -47,10 +48,36 @@ public class TimeTableRepository {
         TimeTable timeTable = new TimeTable(
                 timeslotRepository.findAll(),
                 roomRepository.findAll(),
-                lessonRepository.findAll());        
+                lessonRepository.findAll());
+                     
         return timeTable;
     }
 
+    public TimeTable findByIdAndConstraints(Long id, ConstraintWeights constraintWeight) {
+        if (!SINGLETON_TIME_TABLE_ID.equals(id)) {
+            throw new IllegalStateException("There is no timeTable with id (" + id + ").");
+        }
+        // Occurs in a single transaction, so each initialized lesson references the same timeslot/room instance
+        // that is contained by the timeTable's timeslotList/roomList.
+        TimeTable timeTable = new TimeTable(
+                timeslotRepository.findAll(),
+                roomRepository.findAll(),
+                lessonRepository.findAll());
+        if(null != constraintWeight.getRoomWeight()) {
+            timeTable.getConstraintConfiguration().setRoomConflict(HardSoftScore.ofHard(constraintWeight.getRoomWeight()));
+        }
+
+        if(null != constraintWeight.getTeacherWeight()) {
+            timeTable.getConstraintConfiguration().setTeacherConflict(HardSoftScore.ofHard(constraintWeight.getTeacherWeight()));
+        }
+
+        if(null != constraintWeight.getStudentWeight()) {
+            timeTable.getConstraintConfiguration().setStudentConflict(HardSoftScore.ofHard(constraintWeight.getStudentWeight()));
+        }
+             
+        return timeTable;
+    }
+    
     public void save(TimeTable timeTable) {
         for (Lesson lesson : timeTable.getLessonList()) {
             // TODO this is awfully naive: optimistic locking causes issues if called by the SolverManager

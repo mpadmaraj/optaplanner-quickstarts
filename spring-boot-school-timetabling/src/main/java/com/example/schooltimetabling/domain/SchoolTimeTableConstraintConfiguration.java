@@ -19,13 +19,13 @@ public class SchoolTimeTableConstraintConfiguration {
 
 
     @ConstraintWeight(ROOM_CONFLICT)
-    private HardSoftScore roomConflict = HardSoftScore.ofHard(1000);
+    private HardSoftScore roomConflict = HardSoftScore.ofHard(10);
 
     @ConstraintWeight(TEACHER_CONFLICT)
-    private HardSoftScore teacherConflict = HardSoftScore.ofHard(100);
+    private HardSoftScore teacherConflict = HardSoftScore.ofHard(10);
 
     @ConstraintWeight(STUDENT_CONFLICT)
-    private HardSoftScore studentConflict = HardSoftScore.ofHard(10);
+    private HardSoftScore studentConflict = HardSoftScore.ofHard(1);
 
     public HardSoftScore getRoomConflict() {
         return roomConflict;

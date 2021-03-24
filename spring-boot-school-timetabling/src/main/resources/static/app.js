@@ -4,7 +4,7 @@ function refreshTimeTable() {
 
     var url = "/timeTable";
         
-  $.getJSON(url, function (timeTable) {
+  $.post(url, JSON.stringify({roomWeight: roomWeight, teacherWeight: teacherWeight, studentWeight: studentWeight}), function (timeTable) {
     refreshSolvingButtons(timeTable.solverStatus != null && timeTable.solverStatus !== "NOT_SOLVING");
     /* $("#score").text("Score: " + (timeTable.score == null ? "?" : timeTable.score)); */
 
@@ -127,7 +127,7 @@ function convertToId(str) {
 
 function solve() {
 
-  $.post("/timeTable/solve", JSON.stringify({roomWeight: 20}))
+  $.post("/timeTable/solve", JSON.stringify({roomWeight: roomWeight, teacherWeight: teacherWeight, studentWeight: studentWeight}))
   .done(function () {
      refreshTimeTable();
   }).fail(function (xhr, ajaxOptions, thrownError) {
@@ -166,19 +166,19 @@ function constraints() {
 function refreshSolvingButtons(solving) {
   if (solving) {
       $("#message").text("Finding best solution..");
-   // $("#solveButton").hide();
-    //$("#stopSolvingButton").show();
+    $("#solveButton").hide();
+    $("#stopSolvingButton").show();
     refreshTimeTable();
-/*     if (autoRefreshIntervalId == null) {
+     if (autoRefreshIntervalId == null) {
       autoRefreshIntervalId = setInterval(refreshTimeTable, 2000);
-    } */
+    } 
   } else {
         $("#message").text("Final Solution Updated!");
       setTimeout(() => {
       $("#message").text("");    
       }, 5000);
     $("#solveButton").show();
-    //$("#stopSolvingButton").hide();
+    $("#stopSolvingButton").hide();
     if (autoRefreshIntervalId != null) {
       clearInterval(autoRefreshIntervalId);
       autoRefreshIntervalId = null;
@@ -397,3 +397,19 @@ function buildPercentageColor(floorColor, ceilColor, shadePercentage) {
   let blue = (floorColor & 0x0000FF) + Math.floor(shadePercentage * ((ceilColor & 0x0000FF) - (floorColor & 0x0000FF))) & 0x0000FF;
   return red | green | blue;
 }
+var roomWeight = 10;
+var teacherWeight = 10;
+var studentWeight = 1;
+
+$('#roomWeightSlider').on("change mousemove", function() {
+    roomWeight=$(this).val();
+    $(this).next().html($(this).val());
+});
+$('#teacherWeightSlider').on("change mousemove", function() {
+    teacherWeight=$(this).val();
+    $(this).next().html($(this).val());
+});
+$('#studentWeightSlider').on("change mousemove", function() {
+    studentWeight=$(this).val();
+    $(this).next().html($(this).val());
+});

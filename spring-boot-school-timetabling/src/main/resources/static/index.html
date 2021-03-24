@@ -21,6 +21,9 @@
     <title>School Schedule class</title>
     <link rel="stylesheet" href="/webjars/bootstrap/css/bootstrap.min.css" />
     <link rel="stylesheet" href="/webjars/font-awesome/css/all.css" />
+    <style>
+
+    </style>
 </head>
 <body>
 <div class="container">
@@ -41,23 +44,35 @@
             <span class="fas fa-refresh"></span> Refresh
         </button>
         <button id="solveButton" type="button" class="btn btn-success">
-            <span class="fas fa-play"></span> Fit
+            <span class="fas fa-play"></span> Find Solution
         </button>
-        <button id="solveWithoutRoomButton" type="button" class="btn btn-Danger">
-            <span class=""></span> Ignore Room
-        </button>
-<!--         <button id="stopSolvingButton" type="button" class="btn btn-danger">
+         <button id="stopSolvingButton" type="button" class="btn btn-danger">
             <span class="fas fa-stop"></span> Stop
-        </button> -->
+        </button>
         <!--    <button type="button" class="float-right btn btn-warning"><span class="fas fa-stop"></span> Terminate</button>-->
         <!-- <span id="score" class="score ml-2 align-middle font-weight-bold">Score: ?</span> -->
         <button id="scoreReason" type="button" class="btn btn-danger">
-            <span class="fas "></span> Reason
+            <span class="fas "></span> Explain Score
         </button>
-        <button id="showConstriaints" type="button" class="btn btn-success">
+<!--        <button id="showConstriaints" type="button" class="btn btn-success">
             <span class="fas "></span> Show Constraints
-        </button>
+        </button>-->
         <h6 id="message" style="margin-top: 0.2rem;color:red;"></h6>
+        <div>
+            <span>Room Weight:</span>
+            <input type="range" min="0" max="10" value="10" class="slider" id="roomWeightSlider">
+            <span>10</span>
+        </div>
+                <div>
+            <span>Teacher Weight:</span>
+            <input type="range" min="0" max="10" value="10" class="slider" id="teacherWeightSlider">
+            <span>10</span>
+        </div>
+                <div>
+            <span>Student Weight:</span>
+            <input type="range" min="0" max="10" value="1" class="slider" id="studentWeightSlider">
+            <span>1</span>
+        </div>
         <div class="float-right">
             <ul class="nav nav-pills" id="myTab" role="tablist">
                 <li class="nav-item">
