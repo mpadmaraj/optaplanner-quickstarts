@@ -29,7 +29,7 @@ import com.example.schooltimetabling.domain.Lesson;
 import static com.example.schooltimetabling.domain.SchoolTimeTableConstraintConfiguration.ROOM_CONFLICT;
 import static com.example.schooltimetabling.domain.SchoolTimeTableConstraintConfiguration.TEACHER_CONFLICT;
 import static com.example.schooltimetabling.domain.SchoolTimeTableConstraintConfiguration.STUDENT_CONFLICT;
-import static com.example.schooltimetabling.domain.SchoolTimeTableConstraintConfiguration.isRoomConsidered;
+
 public class TimeTableConstraintProvider implements ConstraintProvider {
 
     @Override

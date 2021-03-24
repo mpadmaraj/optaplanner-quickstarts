@@ -1,7 +1,7 @@
 /target
 /build
 /local
-
+/bin
 # Eclipse, Netbeans and IntelliJ files
 /.*
 !.gitignore

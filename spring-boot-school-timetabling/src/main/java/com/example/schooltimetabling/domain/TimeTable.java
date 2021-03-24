@@ -72,6 +72,7 @@ public class TimeTable {
     public void setConstraintConfiguration(SchoolTimeTableConstraintConfiguration constraintConfiguration) {
         this.constraintConfiguration = constraintConfiguration;
     }
+    
     public List<Timeslot> getTimeslotList() {
         return timeslotList;
     }
@@ -90,12 +91,6 @@ public class TimeTable {
 
     public SolverStatus getSolverStatus() {
         return solverStatus;
-    }
-
-    public void setRoomConsidered(boolean roomConsidered) {
-        if(!roomConsidered){
-            constraintConfiguration.setRoomConflict(HardSoftScore.ZERO);
-        }
     }
 
     public void setSolverStatus(SolverStatus solverStatus) {

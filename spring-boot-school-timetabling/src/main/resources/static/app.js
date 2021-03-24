@@ -1,7 +1,10 @@
 var autoRefreshIntervalId = null;
 var initialized = false;
 function refreshTimeTable() {
-  $.getJSON("/timeTable", function (timeTable) {
+
+    var url = "/timeTable";
+        
+  $.getJSON(url, function (timeTable) {
     refreshSolvingButtons(timeTable.solverStatus != null && timeTable.solverStatus !== "NOT_SOLVING");
     /* $("#score").text("Score: " + (timeTable.score == null ? "?" : timeTable.score)); */
 
@@ -123,7 +126,9 @@ function convertToId(str) {
 }
 
 function solve() {
-  $.post("/timeTable/solve", function () {
+
+  $.post("/timeTable/solve", JSON.stringify({roomWeight: 20}))
+  .done(function () {
      refreshTimeTable();
   }).fail(function (xhr, ajaxOptions, thrownError) {
     showError("Start solving failed.", xhr);
@@ -131,11 +136,7 @@ function solve() {
 }
 
 function solveWithoutRoom() {
-  $.get("/timeTable/reset", function () {
-     //refreshTimeTable();
-  }).fail(function (xhr, ajaxOptions, thrownError) {
-    showError("Start solving failed.", xhr);
-  });
+    solve();
 }
 
 
@@ -164,6 +165,7 @@ function constraints() {
 
 function refreshSolvingButtons(solving) {
   if (solving) {
+      $("#message").text("Finding best solution..");
    // $("#solveButton").hide();
     //$("#stopSolvingButton").show();
     refreshTimeTable();
@@ -171,6 +173,10 @@ function refreshSolvingButtons(solving) {
       autoRefreshIntervalId = setInterval(refreshTimeTable, 2000);
     } */
   } else {
+        $("#message").text("Final Solution Updated!");
+      setTimeout(() => {
+      $("#message").text("");    
+      }, 5000);
     $("#solveButton").show();
     //$("#stopSolvingButton").hide();
     if (autoRefreshIntervalId != null) {

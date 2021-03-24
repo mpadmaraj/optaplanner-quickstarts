@@ -16,6 +16,7 @@
 
 package com.example.schooltimetabling.persistence;
 
+import org.optaplanner.core.api.score.buildin.hardsoft.HardSoftScore;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,10 +44,11 @@ public class TimeTableRepository {
         }
         // Occurs in a single transaction, so each initialized lesson references the same timeslot/room instance
         // that is contained by the timeTable's timeslotList/roomList.
-        return new TimeTable(
+        TimeTable timeTable = new TimeTable(
                 timeslotRepository.findAll(),
                 roomRepository.findAll(),
-                lessonRepository.findAll());
+                lessonRepository.findAll());        
+        return timeTable;
     }
 
     public void save(TimeTable timeTable) {

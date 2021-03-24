@@ -17,7 +17,6 @@ public class SchoolTimeTableConstraintConfiguration {
 
     public static final String STUDENT_CONFLICT = "Student group conflict";
 
-    public static boolean isRoomConsidered = true;
 
     @ConstraintWeight(ROOM_CONFLICT)
     private HardSoftScore roomConflict = HardSoftScore.ofHard(1000);
