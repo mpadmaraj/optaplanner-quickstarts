@@ -1,7 +1,7 @@
 package com.example.schooltimetabling.service;
 
-import com.example.schooltimetabling.domain.ConstraintWeights;
-import com.example.schooltimetabling.domain.TimeTable;
+import com.example.schooltimetabling.domain.UserConstraints;
+import com.example.schooltimetabling.domain.TimeTableSolution;
 import com.example.schooltimetabling.persistence.TimeTableRepository;
 
 import org.optaplanner.core.api.score.buildin.hardsoft.HardSoftScore;
@@ -14,7 +14,7 @@ public class TimeTableService {
     @Autowired
     private TimeTableRepository timeTableRepository;
     
-    public TimeTable getTimeTable (Long problemId, ConstraintWeights constraintWeight){
-        return timeTableRepository.findByIdAndConstraints(problemId, constraintWeight);                            
+    public TimeTableSolution getTimeTable (Long problemId, UserConstraints constraintWeight){
+        return timeTableRepository.findByIdAndConstraints(problemId, constraintWeight, true, false);                            
     }
 }

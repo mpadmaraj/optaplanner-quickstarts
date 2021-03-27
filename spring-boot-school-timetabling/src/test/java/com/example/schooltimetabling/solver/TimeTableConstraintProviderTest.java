@@ -21,7 +21,7 @@ import java.time.LocalTime;
 
 import com.example.schooltimetabling.domain.Lesson;
 import com.example.schooltimetabling.domain.Room;
-import com.example.schooltimetabling.domain.TimeTable;
+import com.example.schooltimetabling.domain.TimeTableSolution;
 import com.example.schooltimetabling.domain.Timeslot;
 import org.junit.jupiter.api.Test;
 import org.optaplanner.test.api.score.stream.ConstraintVerifier;
@@ -39,7 +39,7 @@ class TimeTableConstraintProviderTest {
     private static final Timeslot TIMESLOT4 = new Timeslot(4, DayOfWeek.TUESDAY, LocalTime.NOON.plusHours(3));
 
     @Autowired
-    ConstraintVerifier<TimeTableConstraintProvider, TimeTable> constraintVerifier;
+    ConstraintVerifier<TimeTableConstraintProvider, TimeTableSolution> constraintVerifier;
 
     @Test
     void roomConflict() {

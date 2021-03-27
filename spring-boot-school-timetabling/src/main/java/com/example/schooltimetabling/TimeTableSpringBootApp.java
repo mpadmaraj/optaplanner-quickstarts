@@ -65,7 +65,14 @@ public class TimeTableSpringBootApp {
             timeslotRepository.save(new Timeslot(DayOfWeek.TUESDAY, LocalTime.of(9, 30), LocalTime.of(10, 30)));
             timeslotRepository.save(new Timeslot(DayOfWeek.TUESDAY, LocalTime.of(10, 30), LocalTime.of(11, 30)));
             timeslotRepository.save(new Timeslot(DayOfWeek.TUESDAY, LocalTime.of(13, 30), LocalTime.of(14, 30)));
-            timeslotRepository.save(new Timeslot(DayOfWeek.TUESDAY, LocalTime.of(14, 30), LocalTime.of(15, 30)));*/
+            timeslotRepository.save(new Timeslot(DayOfWeek.TUESDAY, LocalTime.of(14, 30), LocalTime.of(15, 30))); */
+
+/*            timeslotRepository.save(new Timeslot(DayOfWeek.TUESDAY, LocalTime.of(8, 30), LocalTime.of(9, 15)));
+            timeslotRepository.save(new Timeslot(DayOfWeek.TUESDAY, LocalTime.of(9, 15), LocalTime.of(10, 00)));
+            timeslotRepository.save(new Timeslot(DayOfWeek.TUESDAY, LocalTime.of(10, 00), LocalTime.of(10, 45)));
+            timeslotRepository.save(new Timeslot(DayOfWeek.TUESDAY, LocalTime.of(13, 30), LocalTime.of(14, 15)));
+            timeslotRepository.save(new Timeslot(DayOfWeek.TUESDAY, LocalTime.of(14, 15), LocalTime.of(15, 00))); */
+            
             if (demoData == DemoData.LARGE) {
                 timeslotRepository.save(new Timeslot(DayOfWeek.WEDNESDAY, LocalTime.of(8, 30), LocalTime.of(9, 30)));
                 timeslotRepository.save(new Timeslot(DayOfWeek.WEDNESDAY, LocalTime.of(9, 30), LocalTime.of(10, 30)));

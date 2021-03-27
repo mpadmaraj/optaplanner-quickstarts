@@ -28,7 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import com.example.schooltimetabling.domain.Lesson;
-import com.example.schooltimetabling.domain.TimeTable;
+import com.example.schooltimetabling.domain.TimeTableSolution;
 
 @SpringBootTest(properties = {
         "optaplanner.solver.termination.spent-limit=1h", // Effectively disable this termination in favor of the best-score-limit

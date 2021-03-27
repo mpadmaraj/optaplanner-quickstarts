@@ -27,7 +27,7 @@ import org.optaplanner.core.api.score.buildin.hardsoft.HardSoftScore;
 import org.optaplanner.core.api.solver.SolverStatus;
 
 @PlanningSolution
-public class TimeTable {
+public class TimeTableSolution {
 
     @ConstraintConfigurationProvider
     private SchoolTimeTableConstraintConfiguration constraintConfiguration = new SchoolTimeTableConstraintConfiguration();
@@ -51,10 +51,10 @@ public class TimeTable {
 
 
     // No-arg constructor required for OptaPlanner
-    public TimeTable() {
+    public TimeTableSolution() {
     }
 
-    public TimeTable(List<Timeslot> timeslotList, List<Room> roomList,
+    public TimeTableSolution(List<Timeslot> timeslotList, List<Room> roomList,
             List<Lesson> lessonList) {
         this.timeslotList = timeslotList;
         this.roomList = roomList;
@@ -97,7 +97,7 @@ public class TimeTable {
         this.solverStatus = solverStatus;
     }
 
-    public TimeTable withConstraintConfiguration(SchoolTimeTableConstraintConfiguration constraintConfiguration) {
+    public TimeTableSolution withConstraintConfiguration(SchoolTimeTableConstraintConfiguration constraintConfiguration) {
         this.constraintConfiguration = constraintConfiguration;
         return this;
     }

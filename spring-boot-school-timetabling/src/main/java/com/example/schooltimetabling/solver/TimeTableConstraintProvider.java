@@ -29,6 +29,9 @@ import com.example.schooltimetabling.domain.Lesson;
 import static com.example.schooltimetabling.domain.SchoolTimeTableConstraintConfiguration.ROOM_CONFLICT;
 import static com.example.schooltimetabling.domain.SchoolTimeTableConstraintConfiguration.TEACHER_CONFLICT;
 import static com.example.schooltimetabling.domain.SchoolTimeTableConstraintConfiguration.STUDENT_CONFLICT;
+import static com.example.schooltimetabling.domain.SchoolTimeTableConstraintConfiguration.SMITH_PREFERS_TUESDAY;
+import static com.example.schooltimetabling.domain.SchoolTimeTableConstraintConfiguration.SMITH_HATES_TUESDAY;
+import static com.example.schooltimetabling.domain.SchoolTimeTableConstraintConfiguration.SMITH_WANTS_TWO_CLASS;
 
 public class TimeTableConstraintProvider implements ConstraintProvider {
 
@@ -40,10 +43,13 @@ public class TimeTableConstraintProvider implements ConstraintProvider {
                 roomConflict(constraintFactory),
                 teacherConflict(constraintFactory),
                 studentGroupConflict(constraintFactory),
+                smithPrefersTuesday(constraintFactory),
+                smithHatesTuesday(constraintFactory),
+                smithPrefersConscecutiveClassOnTuesday(constraintFactory)
                 // Soft constraints
-                teacherRoomStability(constraintFactory),
-                teacherTimeEfficiency(constraintFactory),
-                studentGroupSubjectVariety(constraintFactory)
+                // teacherRoomStability(constraintFactory),
+                // teacherTimeEfficiency(constraintFactory),
+                // studentGroupSubjectVariety(constraintFactory)
         };
     }
 
@@ -85,7 +91,43 @@ public class TimeTableConstraintProvider implements ConstraintProvider {
                 //.penalize("Student group conflict", HardSoftScore.ONE_HARD);
     }
 
-    Constraint teacherRoomStability(ConstraintFactory constraintFactory) {
+     Constraint smithPrefersTuesday(ConstraintFactory constraintFactory) {
+        // A teacher prefers to teach in a single room.
+        return constraintFactory               
+                .from(Lesson.class)
+                .filter((lesson) -> lesson.getTeacher().equals("Mr. Smith") && lesson.getTimeslot().getDayOfWeek().getValue() == 2)
+                .rewardConfigurable(SMITH_PREFERS_TUESDAY);
+    }
+
+    Constraint smithHatesTuesday(ConstraintFactory constraintFactory) {
+        // A teacher prefers to teach in a single room.
+        return constraintFactory               
+                .from(Lesson.class)
+                .filter((lesson) -> lesson.getTeacher().equals("Mr. Smith") && lesson.getTimeslot().getDayOfWeek().getValue() == 2)
+                .penalizeConfigurable(SMITH_HATES_TUESDAY);
+    }
+
+    Constraint smithPrefersConscecutiveClassOnTuesday(ConstraintFactory constraintFactory) {
+        // A student group dislikes sequential lessons on the same subject.
+        return constraintFactory
+                .from(Lesson.class)
+                .join(Lesson.class,
+                        Joiners.equal(Lesson::getSubject),
+                        Joiners.equal(Lesson::getStudentGroup),
+                        Joiners.equal((lesson) -> lesson.getTimeslot().getDayOfWeek()))
+                .filter((lesson1, lesson2) -> {
+                    Duration between = Duration.between(lesson1.getTimeslot().getEndTime(),
+                            lesson2.getTimeslot().getStartTime());
+                    return !between.isNegative() && between.compareTo(Duration.ofMinutes(30)) <= 0 && 
+                        lesson1.getTimeslot().getDayOfWeek().getValue() == 2 && 
+                        lesson1.getStudentGroup().equals(lesson2.getStudentGroup()) &&
+                        lesson1.getRoom().getId().equals(lesson2.getRoom().getId()) &&
+                        lesson1.getTeacher().equals("Mr. Smith") &&
+                        lesson1.getTeacher().equals(lesson2.getTeacher()) ;
+                })
+                .rewardConfigurable(SMITH_WANTS_TWO_CLASS);
+    }
+/*    Constraint teacherRoomStability(ConstraintFactory constraintFactory) {
         // A teacher prefers to teach in a single room.
         return constraintFactory
                 .fromUniquePair(Lesson.class,
@@ -122,6 +164,6 @@ public class TimeTableConstraintProvider implements ConstraintProvider {
                     return !between.isNegative() && between.compareTo(Duration.ofMinutes(30)) <= 0;
                 })
                 .penalize("Student group subject variety", HardSoftScore.ONE_SOFT);
-    }
+    } */
 
 }

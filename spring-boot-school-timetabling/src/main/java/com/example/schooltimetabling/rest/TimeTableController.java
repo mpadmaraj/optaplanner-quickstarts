@@ -16,29 +16,27 @@
 
 package com.example.schooltimetabling.rest;
 
-import org.optaplanner.core.api.score.ScoreManager;
-import org.optaplanner.core.api.domain.constraintweight.ConstraintWeight;
+import java.util.HashMap;
+import java.util.Map;
+
+import com.example.schooltimetabling.TimeTableSpringBootApp;
+import com.example.schooltimetabling.domain.TimeTableSolution;
+import com.example.schooltimetabling.domain.UserConstraints;
+import com.example.schooltimetabling.persistence.TimeTableRepository;
+
 import org.optaplanner.core.api.score.ScoreExplanation;
+import org.optaplanner.core.api.score.ScoreManager;
 import org.optaplanner.core.api.score.buildin.hardsoft.HardSoftScore;
-import org.optaplanner.core.api.solver.Solver;
-import org.optaplanner.core.api.solver.SolverFactory;
 import org.optaplanner.core.api.solver.SolverJob;
 import org.optaplanner.core.api.solver.SolverManager;
 import org.optaplanner.core.api.solver.SolverStatus;
-import org.optaplanner.core.config.solver.SolverConfig;
-import org.optaplanner.spring.boot.autoconfigure.SolverManagerProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.example.schooltimetabling.TimeTableSpringBootApp;
-import com.example.schooltimetabling.domain.ConstraintWeights;
-import com.example.schooltimetabling.domain.TimeTable;
-import com.example.schooltimetabling.persistence.TimeTableRepository;
-import com.example.schooltimetabling.service.TimeTableService;
 
 @RestController
 @RequestMapping("/timeTable")
@@ -47,26 +45,43 @@ public class TimeTableController {
     @Autowired
     private TimeTableRepository timeTableRepository;
 
+    public static Map<String, Long> timeTableId;
+    static {
+        timeTableId = new HashMap<>();
+        timeTableId.put("ROOM_CONFLICT", 1L);
+        timeTableId.put("TEACHER_CONFLICT", 2L);
+        timeTableId.put("STUDENT_CONFLICT", 3L);
+        timeTableId.put("TEACH_DAY_PREFERENCE", 4L);
+        timeTableId.put("TEACH_DAY_DISLIKE", 5L);
+        timeTableId.put("ALL_CONFLICT", 5L);
+        timeTableId.put("TEACH_DAY_DISLIKE", 5L);
+    }
 
     @Autowired
-    private TimeTableService timeTableService;
+    private SolverManager<TimeTableSolution, Long> solverManager;
 
     @Autowired
-    private SolverManager<TimeTable, Long> solverManager;
-    @Autowired
-    private ScoreManager<TimeTable, HardSoftScore> scoreManager;
+    private ScoreManager<TimeTableSolution, HardSoftScore> scoreManager;
 
     // To try, GET http://localhost:8080/timeTable
-    @PostMapping()
-    public TimeTable getTimeTable( @RequestBody ConstraintWeights constraintWeight) {
+    @PostMapping("/{problemId}")
+    public TimeTableSolution getTimeTable( @PathVariable Long problemId,  @RequestBody UserConstraints constraintWeight) {
         // Get the solver status before loading the solution
         // to avoid the race condition that the solver terminates between them
         SolverStatus solverStatus = getSolverStatus();
-        TimeTable solution = timeTableRepository.findByIdAndConstraints(TimeTableRepository.SINGLETON_TIME_TABLE_ID, constraintWeight);        
+        TimeTableSolution solution = timeTableRepository.findByIdAndConstraints(problemId, constraintWeight, false, false);        
         scoreManager.updateScore(solution); // Sets the score
         solution.setSolverStatus(solverStatus);
         //System.out.println(scoreManager.explainScore(solution));
         return solution;
+    }
+
+    private Long generateProblemId() {
+/*        long leftLimit = 1L;
+        long rightLimit = 100L;
+        long generatedLong = leftLimit + (long) (Math.random() * (rightLimit - leftLimit));
+        return generatedLong; */
+        return TimeTableRepository.SINGLETON_TIME_TABLE_ID;
     }
 
     @GetMapping("/reset")
@@ -75,35 +90,37 @@ public class TimeTableController {
     }
 
     @PostMapping("/solve")
-    public void solve( @RequestBody ConstraintWeights constraintWeight) {
+    public Long solve( @RequestBody UserConstraints constraintWeight) {
 
-        SolverJob<TimeTable, Long> solveAndListen = solverManager.solveAndListen(TimeTableRepository.SINGLETON_TIME_TABLE_ID,
-                problemId -> {
-                    return timeTableRepository.findByIdAndConstraints(problemId, constraintWeight);
+        Long problemId = generateProblemId();
+        SolverJob<TimeTableSolution, Long> solveAndListen = solverManager.solveAndListen(problemId,
+                id -> {
+                    if(constraintWeight.getEnableTuesday()) {
+                        return timeTableRepository.findByIdAndConstraints(id, constraintWeight, true, true);
+                    } else {
+                        return timeTableRepository.findByIdAndConstraints(id, constraintWeight, true, false);
+                    }
+                    
                 },
-                timeTableRepository::save);                
+                timeTableRepository::save);      
+        return problemId;          
     }
     
     
-    @PostMapping("/solve/stop")
-    public void solveStop() {
+    @PostMapping("/solve/stop/{problemId}")
+    public void solveStop(@PathVariable Long problemId) {
         
-        solverManager.terminateEarly(TimeTableRepository.SINGLETON_TIME_TABLE_ID);
+        solverManager.terminateEarly(problemId);
     }
 
-    @PostMapping("/reason")
-    public ScoreExplanation<TimeTable, HardSoftScore> reason() {
-        TimeTable solution = timeTableRepository.findById(TimeTableRepository.SINGLETON_TIME_TABLE_ID);
+    @PostMapping("/reason/{problemId}")
+    public ScoreExplanation<TimeTableSolution, HardSoftScore> reason(@PathVariable Long problemId) {
+        TimeTableSolution solution = timeTableRepository.findById(problemId);
         return scoreManager.explainScore(solution);
     }
 
     public SolverStatus getSolverStatus() {
         return solverManager.getSolverStatus(TimeTableRepository.SINGLETON_TIME_TABLE_ID);
-    }
-
-    @PostMapping("/stopSolving")
-    public void stopSolving() {
-        solverManager.terminateEarly(TimeTableRepository.SINGLETON_TIME_TABLE_ID);
     }
 
 }

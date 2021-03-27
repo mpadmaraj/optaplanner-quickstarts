@@ -36,13 +36,13 @@
     <div class="sticky-top d-flex justify-content-center align-items-center" aria-live="polite" aria-atomic="true">
         <div id="notificationPanel" style="position: absolute; top: .5rem;"></div>
     </div>
-    <h1>School time table solver</h1>
+    <h1>Manage School time table</h1>
     <!-- <p>Generate the optimal schedule for your teachers and students.</p> -->
 
     <div style="margin-bottom: .5rem">
-        <button id="refreshButton" type="button" class="btn btn-secondary">
+ <!--       <button id="refreshButton" type="button" class="btn btn-secondary">
             <span class="fas fa-refresh"></span> Refresh
-        </button>
+        </button> -->
         <button id="solveButton" type="button" class="btn btn-success">
             <span class="fas fa-play"></span> Find Solution
         </button>
@@ -51,28 +51,43 @@
         </button>
         <!--    <button type="button" class="float-right btn btn-warning"><span class="fas fa-stop"></span> Terminate</button>-->
         <!-- <span id="score" class="score ml-2 align-middle font-weight-bold">Score: ?</span> -->
-        <button id="scoreReason" type="button" class="btn btn-danger">
+<!--        <button id="scoreReason" type="button" class="btn btn-danger">
             <span class="fas "></span> Explain Score
-        </button>
+        </button> -->
 <!--        <button id="showConstriaints" type="button" class="btn btn-success">
             <span class="fas "></span> Show Constraints
         </button>-->
         <h6 id="message" style="margin-top: 0.2rem;color:red;"></h6>
-        <div>
+        <!--<div>
             <span>Room Weight:</span>
             <input type="range" min="0" max="10" value="10" class="slider" id="roomWeightSlider">
             <span>10</span>
         </div>
-                <div>
+        <div>
             <span>Teacher Weight:</span>
             <input type="range" min="0" max="10" value="10" class="slider" id="teacherWeightSlider">
             <span>10</span>
         </div>
-                <div>
+        <div>
             <span>Student Weight:</span>
             <input type="range" min="0" max="10" value="1" class="slider" id="studentWeightSlider">
             <span>1</span>
-        </div>
+        </div> -->
+        <input type="checkbox" id="roomConflict" name="roomConflict" value="room">
+        <label for="roomConflict">Avoid Room Conflicts</label><br>
+        <input type="checkbox" id="teacherConflict" name="teacherConflict" value="teacher">
+        <label for="teacherConflict">Avoid Teacher Schedule Conflicts</label><br>
+        <input type="checkbox" id="studentConflict" name="studentConflict" value="room">
+        <label for="studentConflict">Avoid Student Group Conflicts</label><br>
+        <input type="checkbox" id="enableTuesday" name="enableTuesday" value="room">
+        <label for="enableTuesday">Add Tuesday</label><br>
+        <input type="checkbox" id="prefersTuesdayConflict" name="prefersTuesdayConflict" value="prefer">
+        <label for="prefersTuesdayConflict">Mr. Smith prefers Tuesdays!</label><br>
+        <input type="checkbox" id="consecutiveClass" name="consecutiveClass" value="cons">
+        <label for="consecutiveClass">Mr. Smith wants consecutive class on Tuesdays!</label><br>
+        <input type="checkbox" id="avoidTuesdayConflict" name="avoidTuesdayConflict" value="room">
+        <label for="avoidTuesdayConflict">Mr. Smith does not like to teach on Tuesday.</label><br>
+
         <div class="float-right">
             <ul class="nav nav-pills" id="myTab" role="tablist">
                 <li class="nav-item">

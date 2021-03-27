@@ -1,10 +1,11 @@
 var autoRefreshIntervalId = null;
 var initialized = false;
+var problemId = 1;
 function refreshTimeTable() {
 
-    var url = "/timeTable";
+    var url = "/timeTable/" + problemId;
         
-  $.post(url, JSON.stringify({roomWeight: roomWeight, teacherWeight: teacherWeight, studentWeight: studentWeight}), function (timeTable) {
+  $.post(url, JSON.stringify(setUpConstraints()), function (timeTable) {
     refreshSolvingButtons(timeTable.solverStatus != null && timeTable.solverStatus !== "NOT_SOLVING");
     /* $("#score").text("Score: " + (timeTable.score == null ? "?" : timeTable.score)); */
 
@@ -125,10 +126,63 @@ function convertToId(str) {
   return btoa(str).replace(/=/g, "");
 }
 
+function setUpConstraints () {
+
+    var cnst = {
+        roomWeight: $("#roomConflict").is(":checked")?1000:0,
+        teacherWeight: $("#teacherConflict").is(":checked")?1000:0,
+        studentWeight: $("#studentConflict").is(":checked")?1000:0,
+        enableTuesday: $("#enableTuesday").is(":checked")?true:false,
+        smithPrefersTuesday: $("#enableTuesday").is(":checked") && $("#prefersTuesdayConflict").is(":checked")?true:false,
+        smithHatesTuesday: $("#enableTuesday").is(":checked") && $("#avoidTuesdayConflict").is(":checked")?true:false,
+        smithTwoClassOnTuesday: $("#enableTuesday").is(":checked") && $("#consecutiveClass").is(":checked")?true:false
+    }
+    return cnst;
+}
+$("#prefersTuesdayConflict").attr("disabled", true);
+$("#avoidTuesdayConflict").attr("disabled", true);
+$("#consecutiveClass").attr("disabled", true);
+
+$('#prefersTuesdayConflict').change(
+    function(){
+        if ($(this).is(':checked')) {            
+            $("#avoidTuesdayConflict").prop('checked', false);
+        }
+});
+
+$('#avoidTuesdayConflict').change(
+    function(){
+        if ($(this).is(':checked')) {            
+            $("#prefersTuesdayConflict").prop('checked', false);
+            $("#consecutiveClass").prop('checked', false);
+        }
+});
+
+$('#consecutiveClass').change(
+    function(){
+        if ($(this).is(':checked')) {            
+            $("#avoidTuesdayConflict").prop('checked', false);
+        }
+});
+
+$('#enableTuesday').change(
+    function(){
+        if ($(this).is(':checked')) {
+            $("#prefersTuesdayConflict").removeAttr("disabled");
+            $("#avoidTuesdayConflict").removeAttr("disabled");
+            $("#consecutiveClass").removeAttr("disabled");
+        } else {
+            $("#prefersTuesdayConflict").attr("disabled", true);
+            $("#avoidTuesdayConflict").attr("disabled", true);
+            $("#consecutiveClass").attr("disabled", true);
+        }
+});
 function solve() {
 
-  $.post("/timeTable/solve", JSON.stringify({roomWeight: roomWeight, teacherWeight: teacherWeight, studentWeight: studentWeight}))
-  .done(function () {
+  $.post("/timeTable/solve", JSON.stringify(setUpConstraints()))
+  .done(function (id) {
+      console.log(id);
+      problemId = id;
      refreshTimeTable();
   }).fail(function (xhr, ajaxOptions, thrownError) {
     showError("Start solving failed.", xhr);
@@ -187,17 +241,17 @@ function refreshSolvingButtons(solving) {
 }
 
 function stopSolving() {
-  $.post("/timeTable/stopSolving", function () {
+  $.post("/timeTable/solve/stop/"+problemId, function () {
     refreshSolvingButtons(false);
     refreshTimeTable();
   }).fail(function (xhr, ajaxOptions, thrownError) {
     showError("Stop solving failed.", xhr);
   });
-}
+} 
 
 function addLesson() {
   var subject = $("#lesson_subject").val().trim();
-  $.post("/timeTable/stopSolving", function () {
+  $.post("/timeTable/solve/stop/"+problemId, function () {
     $.post("/lessons", JSON.stringify({
         "subject": subject,
         "teacher": $("#lesson_teacher").val().trim(),
